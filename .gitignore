@@ -1,0 +1,10 @@
+# python
+__pycache__/
+*.py[cod]
+.venv/
+
+# pipeline outputs / scratch (regenerated)
+blob_work/
+outputs/
+*.npy
+embedding_compare.png
