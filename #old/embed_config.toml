@@ -1,0 +1,27 @@
+# Config for embed_repl.py / embed_tiles_standalone.py
+# Edit values here, then re-run the "load config" cell in the REPL to pick them up.
+
+# Folder of tiles to embed (searched recursively for .tif/.png/.jpg ...).
+tiles_dir = "/home/clement/local_copy_train_data/"
+
+# Local DINOv3 ViT-L/16 pretrained weights.
+weights = "./test_data/dinov3_weights/dinov3_vitl16_pretrain_sat493m-eadcf0ff.pth"
+
+# Where embeddings.npy + paths.txt are written.
+out_dir = "./embeddings_out"
+
+# DINO input size, must be a multiple of 16. 384 = native tile (24x24 patch grid).
+size = 384
+
+# Tiles per GPU forward. 384^2 is cheap; an RTX 3060 (12 GB) handles 32+.
+batch_size = 32
+
+# DataLoader IO workers. With many small files, disk read dominates -> raise this.
+# Tip: in a REPL, set to 0 first (simpler, no worker processes) then raise once it works.
+workers = 0
+
+# cuda, cuda:0, cuda:1, cpu ...
+device = "cuda"
+
+# bf16 autocast: faster + less VRAM. false = exact fp32 parity with the activity.
+amp = true
