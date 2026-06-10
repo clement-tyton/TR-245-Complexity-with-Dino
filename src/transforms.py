@@ -7,35 +7,55 @@ from __future__ import annotations
 import glob
 import math
 import os
+import zipfile
 
 import numpy as np
 import geopandas as gpd
 from shapely.geometry import box
+from numpy.lib import format as npy_format
 import rasterio
 from rasterio.windows import from_bounds
 from rasterio.warp import transform_bounds
 from bbox_to_tile_grid.tilegrid import create_adaptive_grid          # bbox->grid activity
+from tqdm import tqdm
 
 import config
 
 
-def read_tile_bboxes(site_dir, splits=("train", "val")):
+def _npz_member_shape(zf, name):
+    """Shape of an array inside a .npz from its .npy header — no body decompression."""
+    with zf.open(name + ".npy") as m:
+        ver = npy_format.read_magic(m)
+        rd = npy_format.read_array_header_1_0 if ver == (1, 0) else npy_format.read_array_header_2_0
+        shape, _, _ = rd(m)
+    return shape
+
+
+def _npz_member_array(zf, name):
+    """Full (small) array from a .npz member, via one open on an existing ZipFile handle."""
+    with zf.open(name + ".npy") as m:
+        return npy_format.read_array(m, allow_pickle=True)
+
+
+def read_tile_bboxes(site_dir, splits=("train", "val"), show_bar=True):
     """One row per tile = its real-world bbox (from GEO_TRANSFORM + tile shape).
 
     GEO_TRANSFORM = [px, 0, ox, 0, -px, oy, ...]; bbox = (ox, oy - h*px, ox + w*px, oy).
     Returns a GeoDataFrame (tile id, split, path, w, h, geometry) in the tiles' CRS.
+    Reads only the small GEO_TRANSFORM/SRID arrays + RED's header shape (no band decompression)
+    -> fast even over /mnt. Shows a tqdm bar (the per-tile network reads can be slow).
     """
+    files = [(s, f) for s in splits for f in glob.glob(os.path.join(site_dir, s, "*.npz"))]
     rows, srid = [], None
-    for s in splits:
-        for f in glob.glob(os.path.join(site_dir, s, "*.npz")):
-            with np.load(f, allow_pickle=True) as d:
-                gt = np.asarray(d["GEO_TRANSFORM"], float)
-                h, w = d["RED"].shape
-                srid = int(d["SRID"][0])
-            ox, oy, px, py = gt[2], gt[5], gt[0], gt[4]          # py is negative
-            geom = box(ox, oy + h * py, ox + w * px, oy)         # (xmin, ymin, xmax, ymax)
-            rows.append({"tile": os.path.basename(f)[:-4], "split": s, "path": f,
-                         "w": int(w), "h": int(h), "geometry": geom})
+    for s, f in tqdm(files, desc="read tiles", unit="tile", disable=not show_bar):
+        with zipfile.ZipFile(f) as zf:                       # ONE open per tile (over /mnt)
+            h, w = _npz_member_shape(zf, "RED")              # header only — no band decompress
+            gt = np.asarray(_npz_member_array(zf, "GEO_TRANSFORM"), float)   # tiny arrays
+            srid = int(_npz_member_array(zf, "SRID")[0])
+        ox, oy, px, py = gt[2], gt[5], gt[0], gt[4]          # py is negative
+        geom = box(ox, oy + h * py, ox + w * px, oy)         # (xmin, ymin, xmax, ymax)
+        rows.append({"tile": os.path.basename(f)[:-4], "split": s, "path": f,
+                     "w": int(w), "h": int(h), "geometry": geom})
     return gpd.GeoDataFrame(rows, geometry="geometry", crs=f"EPSG:{srid}")
 
 
