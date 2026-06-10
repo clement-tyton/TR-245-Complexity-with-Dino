@@ -102,6 +102,45 @@ def all_site_keys():
     return list(config._load_json("sites_to_resolutions.json"))
 
 
+def _write_run_manifest(out_root, keys, res, run_kw):
+    """Dump the exact settings of this batch to <out_root>/runs/run_<ts>_gpu<dev>_<pid>.json so a
+    months-old embedding set stays reproducible (model, high_res, weights, git commit, sites).
+    One file per process => shards/GPUs never clobber each other. Best-effort; never fails the run."""
+    import datetime
+    import json
+    import socket
+    import subprocess
+    try:
+        commit = subprocess.run(["git", "rev-parse", "HEAD"], cwd=os.path.dirname(__file__),
+                                capture_output=True, text=True).stdout.strip() or None
+    except Exception:
+        commit = None
+    wdir = os.environ.get("DINO_WEIGHTS_FOLDER", "")
+    weights = ({f: os.path.getsize(os.path.join(wdir, f)) for f in os.listdir(wdir)
+                if f.endswith(".pth")} if wdir and os.path.isdir(wdir) else {})
+    dev = os.environ.get("CUDA_VISIBLE_DEVICES", "")
+    ts = datetime.datetime.now().strftime("%Y%m%dT%H%M%S")
+    manifest = {
+        "timestamp": datetime.datetime.now().isoformat(timespec="seconds"),
+        "git_commit": commit, "host": socket.gethostname(), "pid": os.getpid(),
+        "cuda_visible_devices": dev, "emb_root": out_root, "res": res,
+        "dino_model": run_kw.get("dino_model", config.DINO_MODEL),
+        "high_res": run_kw.get("high_res", config.HIGH_RES),
+        "upsample": run_kw.get("upsample", None),
+        "vram_gb_for_7b": config.VRAM_GB_FOR_7B,
+        "tile_patches": config.TILE_PATCHES, "min_data_cov": config.MIN_DATA_COV,
+        "weights_folder": wdir, "weights_files": weights,
+        "n_sites": len(keys), "sites": keys,
+    }
+    runs_dir = os.path.join(out_root, "runs")
+    os.makedirs(runs_dir, exist_ok=True)
+    path = os.path.join(runs_dir, f"run_{ts}_gpu{dev or 'x'}_{os.getpid()}.json")
+    with open(path, "w") as f:
+        json.dump(manifest, f, indent=2)
+    print(f"run manifest -> {path}")
+    return path
+
+
 def run_sites(site_keys=None, *, res=None, out_root=config.EMB_ROOT, shard=None, limit=None,
               **run_kw) -> dict:
     """Embed many sites. site_keys=None -> ALL in the catalog. Skips (and reports) sites with
@@ -114,6 +153,7 @@ def run_sites(site_keys=None, *, res=None, out_root=config.EMB_ROOT, shard=None,
         keys = keys[i::n]
     if limit:
         keys = keys[:limit]
+    _write_run_manifest(out_root, keys, res, run_kw)      # reproducibility: settings + commit + sites
     done, fails = [], []
     for k, key in enumerate(keys, 1):
         print(f"\n===== [{k}/{len(keys)}] {key} =====", flush=True)
