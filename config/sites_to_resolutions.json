@@ -1,0 +1,1082 @@
+{
+  "BHP_Rehab_2024/MWER2024": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP_Rehab_2024/Jimblebar2024": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP_Rehab_2024/PacksaddleNorthFlankAeraC2024": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP_Rehab_2024/NVCP4468_satellite": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP_Rehab_2024/Central_Pilbara2024": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP_Rehab_2024/NVCP7009_MNSouth_satellite": {
+    "resolutions": [
+      "15cm"
+    ]
+  },
+  "BHP_Rehab_2024/NVCP7009_TurnerCamp_satellite": {
+    "resolutions": [
+      "15cm"
+    ]
+  },
+  "BHP_Rehab_2024/TheShire2024": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP_Rehab_2024/NVCP7139_SouthFlank_satellite": {
+    "resolutions": [
+      "15cm"
+    ]
+  },
+  "GeoNadir/UAV_Descoberta_Brazil": {
+    "resolutions": [
+      "3cm"
+    ]
+  },
+  "GeoNadir/UAV_Brewerville_Liberia": {
+    "resolutions": [
+      "3cm"
+    ]
+  },
+  "GeoNadir/UAV_Daboase_Ghana": {
+    "resolutions": [
+      "3cm"
+    ]
+  },
+  "GeoNadir/UAV_Sonoita_AZ": {
+    "resolutions": [
+      "3cm"
+    ]
+  },
+  "GeoNadir/UAV_Ampudia_Spain": {
+    "resolutions": [
+      "3cm"
+    ]
+  },
+  "GeoNadir/UAV_Cedaredge_CO": {
+    "resolutions": [
+      "3cm"
+    ]
+  },
+  "GeoNadir/UAV_Genoa_VIC_AUS": {
+    "resolutions": [
+      "3cm"
+    ]
+  },
+  "GeoNadir/UAV_Olympia_USA": {
+    "resolutions": [
+      "3cm"
+    ]
+  },
+  "GeoNadir/UAV_Sabinar_Spain": {
+    "resolutions": [
+      "3cm"
+    ]
+  },
+  "GeoNadir/UAV_Monrovia_Liberia": {
+    "resolutions": [
+      "3cm"
+    ]
+  },
+  "GeoNadir/UAV_Tombstone_AZ": {
+    "resolutions": [
+      "3cm"
+    ]
+  },
+  "GeoNadir/UAV_Colunga_Spain": {
+    "resolutions": [
+      "3cm"
+    ]
+  },
+  "GeoNadir/UAV_Curepto_Chile": {
+    "resolutions": [
+      "3cm"
+    ]
+  },
+  "GeoNadir/UAV_Constitution_Chile": {
+    "resolutions": [
+      "3cm"
+    ]
+  },
+  "GeoNadir/UAV_Korhogo_Liberia": {
+    "resolutions": [
+      "3cm"
+    ]
+  },
+  "GeoNadir/UAV_Georgetown_Gambia": {
+    "resolutions": [
+      "3cm"
+    ]
+  },
+  "BHP Creeks 2022/Manned PowerSt Post Wet": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Creeks 2022/Manned ThirteenDavidson Post Wet": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Creeks 2022/Manned Caramulla Post Dry": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Creeks 2022/Manned Shovelana Post Dry": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Creeks 2022/Manned Marillina Post Dry": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Creeks 2022/Manned Weeli Wolli Post Dry": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Creeks 2022/Manned Jimblebar Post Dry": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Creeks 2022/Manned Bens Oasis Post Wet": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Creeks 2022/Manned PowerSt Post Dry": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Creeks 2022/Manned ThirteenDavidson Post Dry": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Creeks 2022/Manned Fortescue River Post Wet": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Creeks 2022/Manned Bens Oasis Post Dry": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Creeks 2022/Manned Weeli Wolli Post Wet": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Creeks 2022/Manned Yandicoogina Q2 Jun/Munjina": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Creeks 2022/Manned Yandicoogina Q2 Jun/Yandicoogina": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Creeks 2022/Manned Yandicoogina Q2 Jun/Wannamunna": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Creeks 2022/Manned Yandicoogina Q2 Jun/Mindy": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Creeks 2022/Manned Yandicoogina Q1 MarApr/Wannamunna": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Creeks 2022/Manned Yandicoogina Q1 MarApr/Munjina": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Creeks 2022/Manned Yandicoogina Q1 MarApr/Yandcoogina": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Creeks 2022/Manned Yandicoogina Q1 MarApr/Mindi": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Creeks 2022/Manned Yandicoogina Q4 Nov/Yandicoogina": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Creeks 2022/Manned Yandicoogina Q4 Nov/Mindy": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Creeks 2022/Manned Yandicoogina Q4 Nov/Wannamunna": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Creeks 2022/Manned Yandicoogina Q4 Nov/Munjina": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP 2004/Manned Weeli Wolli Nov20": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP 2004/Weeli Wolli": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP 2004/Bens Oasis": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP 2004/Manned Bens Oasis Nov20": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "MGI_2522_Koolan_Is/MGI_2522_Koolan_Island_Aerial_Data_Capture_May25": {
+    "resolutions": [
+      "3cm"
+    ]
+  },
+  "BHP Rehab 2022/Central_Yandi2022": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Rehab 2022/Northern_Yarrie2022": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Rehab 2022/Eastern_MWER2022": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Rehab 2022/Northern_Nim-Shay2022": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Rehab 2022/Northern_Goldsworthy2022": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Rehab 2022/Central_MAC2022": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Rehab 2022/Eastern_Jimblebar2022": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Rehab 2022/Central_Chichester2022": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "RTIO_ChannarEasternRange_2025": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP_Creeks_2024/BHP_2424_Manned_JimblebarRef_Post_Wet": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP_Creeks_2024/BHP_2424_Manned_Caramulla_Post_Wet_Z50": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP_Creeks_2024/BHP_2424_Manned_ShovelanaRef_Post_Wet": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP_Creeks_2024/BHP_2424_Manned_Powerstation_Post_Wet": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP_Creeks_2024/BHP_2424_Manned_DavidThirteen_Post_Wet": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "RTIO_Weeds_2025/RTIO_2532_HopeDowns": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "Newcrest/Cadia_Sept_2022_10cm": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "Capcoal/Capcoal_10cm": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "RTIO_Rehab_2025/RTIO_2524_RobeValley": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "Colorado_UAV_testing": {
+    "resolutions": [
+      "3cm"
+    ]
+  },
+  "BHP Creeks 2021/Manned Caramulla Post Wet": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Creeks 2021/Manned Weeli Wolli Post Wet": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Creeks 2021/Manned Fortescue River Post Dry_V01": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Creeks 2021/Manned Bens Oasis Post Wet": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Creeks 2021/Manned PowerSt Post Dry": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Creeks 2021/Manned Weeli Wolli Post Dry": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Creeks 2021/Manned Caramulla Post Dry": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Creeks 2021/Manned Bens Oasis Post Dry": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Creeks 2021/Manned PowerSt Post Wet": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Creeks 2021/Manned Yandicoogina Q4 November/Yandicoogina": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Creeks 2021/Manned Yandicoogina Q4 November/WANNAMUNNA": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Creeks 2021/Manned Yandicoogina Q4 November/MUNJINA": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Creeks 2021/Manned Yandicoogina Q4 November/Mindy2nddeploy": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Creeks 2021/Manned Yandicoogina Q3 October/Munjina": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Creeks 2021/Manned Yandicoogina Q3 October/Yandicoogina": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Creeks 2021/Manned Yandicoogina Q3 October/Mindi": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Creeks 2021/Manned Yandicoogina Q3 October/Wanna Munna": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Phase 3/Flight01 GW01 v2 corrected": {
+    "resolutions": [
+      "3cm"
+    ]
+  },
+  "BHP Phase 3/Flight05 NIM02 v2 corrected": {
+    "resolutions": [
+      "3cm"
+    ]
+  },
+  "BHP Phase 3/Manned Goldsworthy SO": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Phase 3/Flight02 GW02": {
+    "resolutions": [
+      "3cm"
+    ]
+  },
+  "BHP Phase 3/Flight08 YARRIE": {
+    "resolutions": [
+      "3cm"
+    ]
+  },
+  "BHP Phase 3/Flight03 GW03 Camp v2 corrected": {
+    "resolutions": [
+      "3cm"
+    ]
+  },
+  "BHP Phase 3/Flight07 SHAYGAP02 v2 corrected": {
+    "resolutions": [
+      "3cm"
+    ]
+  },
+  "BHP Phase 3/Flight02 GW02 v2 corrected": {
+    "resolutions": [
+      "3cm"
+    ]
+  },
+  "BHP Phase 3/Flight01 GW01": {
+    "resolutions": [
+      "3cm"
+    ]
+  },
+  "BHP Phase 3/Manned Yarrie SO": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Phase 3/Flight04 NIM01 v2 corrected": {
+    "resolutions": [
+      "3cm"
+    ]
+  },
+  "BHP Phase 3/Manned Nim Shayegap SO": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Rehab 2021/Central_Chichester2021": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Rehab 2021/Eastern_MWER2021": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Rehab 2021/Eastern_Jimblebar2021": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Rehab 2021/Central_MAC2021": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Rehab 2021/Northern_Nim-Shay2021": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Rehab 2021/Northern_Yarrie2021": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Rehab 2021/Central_Yandi2021": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Rehab 2021/Northern_Goldsworthy2021": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "Brazil_UAV_testing": {
+    "resolutions": [
+      "3cm"
+    ]
+  },
+  "29Metals/29M_2451_GG_manned": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "Telfer/2308_Telfer_Mine_Site_Manned": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "Telfer/NEW_Havieron_Minesite_April2023_28351_20230429": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "Telfer/2220 Access Road Manned": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "Telfer/2220 Mine Site Manned": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "Telfer/2053 Mine Site Manned": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "Telfer/2416_Telfer_Mine_Site_Manned": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "Telfer/2308_Telfer_Access_Rd_Manned": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "Telfer/1824 Old rehab UAV v2 corrected": {
+    "resolutions": [
+      "3cm"
+    ]
+  },
+  "Telfer/2220 Havieron Access Road Manned": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "Telfer/2015 Manned": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "Telfer/1824 OldTSF UAV v2 corrected": {
+    "resolutions": [
+      "3cm"
+    ]
+  },
+  "Telfer/2015 Analogue00 Manned": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "Telfer/2053 Havieron Analogue Road": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "Telfer/1923 Manned": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "Telfer/1824 Rehab02 UAV v2 corrected": {
+    "resolutions": [
+      "3cm"
+    ]
+  },
+  "Telfer/2015 Site01 Rehab UAV": {
+    "resolutions": [
+      "3cm"
+    ]
+  },
+  "Telfer/1824 Rehab01 UAV v2 corrected": {
+    "resolutions": [
+      "3cm"
+    ]
+  },
+  "Telfer/GG_2517_Haveiron_EIA_RGBI_10cm_20210420": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "Telfer/2220 Havieron Mine Site Manned": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "SAN_2533/Degrussa2025": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "CM2020/Area-1": {
+    "resolutions": [
+      "3cm"
+    ]
+  },
+  "CM2020/Manned Yandi 3band fixed": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "CM2020/Area-6": {
+    "resolutions": [
+      "3cm"
+    ]
+  },
+  "CM2020/Area-8": {
+    "resolutions": [
+      "3cm"
+    ]
+  },
+  "CM2020/Area-2": {
+    "resolutions": [
+      "3cm"
+    ]
+  },
+  "CM2020/Area-7": {
+    "resolutions": [
+      "3cm"
+    ]
+  },
+  "CM2020/Manned MAC": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "CM2020/C1C2 Rehab": {
+    "resolutions": [
+      "3cm"
+    ]
+  },
+  "CM2020/E4 Rehab": {
+    "resolutions": [
+      "3cm"
+    ]
+  },
+  "CM2020/Yandi Western Rehab": {
+    "resolutions": [
+      "3cm"
+    ]
+  },
+  "SAN_2219_2022": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "Caramulla 2020/Manned Caramulla": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "Caramulla 2020/Manned Caramulla Nov20": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "Lake Cowal": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "VRX/2023_Muchea": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "VRX/2235_Silica_North": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Rehab 2023/Central_Yandi2023": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Rehab 2023/Central_Chichester2023": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Rehab 2023/Eastern_MWER2023": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Rehab 2023/Eastern_Jimblebar2023": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Rehab 2023/Northern_Goldsworthy2023": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Rehab 2023/Central_MAC2023": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Rehab 2023/Northern_PortHeadland2023": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Rehab 2023/Northern_NimShayYarrie2023": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "MGI_2407_Koolan_Is/MGI_2411_Manned_Koolan_Is": {
+    "resolutions": [
+      "3cm"
+    ]
+  },
+  "Newmont_Rehab_2025/Newmont_2556_Boddington": {
+    "resolutions": [
+      "3cm"
+    ]
+  },
+  "EM2020/MWB Lower WD": {
+    "resolutions": [
+      "3cm"
+    ]
+  },
+  "EM2020/Mulga": {
+    "resolutions": [
+      "3cm"
+    ]
+  },
+  "EM2020/Landfill": {
+    "resolutions": [
+      "3cm"
+    ]
+  },
+  "EM2020/Powerplant": {
+    "resolutions": [
+      "3cm"
+    ]
+  },
+  "EM2020/MWB cells 2": {
+    "resolutions": [
+      "3cm"
+    ]
+  },
+  "EM2020/Manned Jimblebar Rail": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "EM2020/Jimblebar Rail": {
+    "resolutions": [
+      "3cm"
+    ]
+  },
+  "EM2020/MWER": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "EM2020/Manned Jimblebar 2nd": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP_Weeds_2025/BHP_2529_RubyDock": {
+    "resolutions": [
+      "3cm"
+    ]
+  },
+  "BHP Creeks 2023/Manned_Munjina_Post_Wet": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Creeks 2023/Manned_MindiMindi_Post_Wet": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Creeks 2023/BHP_2364_Manned_MindiMindi_Post_Dry": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Creeks 2023/Manned_Caramulla_Jimblebar_Ref_Post_Wet_3": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Creeks 2023/Manned Marillina Post Wet": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Creeks 2023/Manned_ThirteenDavidson_Post_Dry": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Creeks 2023/BHP_2364_Manned_Munjina_Post_Dry": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Creeks 2023/Manned_WannaMunna_Post_Wet": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Creeks 2023/BHP_2364_Manned_WannaMunna_Post_Dry": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Creeks 2023/Manned_Caramulla_Post_Wet": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Creeks 2023/Manned_Caramulla_Jimblebar_Ref_Post_Dry": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Creeks 2023/Manned Caramulla Shovelana Ref Post Wet": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Creeks 2023/Manned ThirteenDavidson Post Wet": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Creeks 2023/Manned_PowersSt_Post_Wet": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Creeks 2023/BHP_2364_Manned_Yandicoogina_Post_Dry": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Creeks 2023/Manned_Marillina_Post_Dry": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Creeks 2023/Manned_Caramulla_Shovelana_Ref_Post_Dry": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Creeks 2023/Manned_Yandicoogina_Post_Wet": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Creeks 2023/Manned_Caramulla_Post_Dry": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "Papua_UAV_testing": {
+    "resolutions": [
+      "3cm"
+    ]
+  },
+  "Nepal_UAV_testing": {
+    "resolutions": [
+      "3cm"
+    ]
+  },
+  "BHP_Rehab_2025/BHP_2525 Rehab25-Goldsworthy": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP_Rehab_2025/BHP_2525 Rehab25-Chichester": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP_Rehab_2025/BHP_2525 Rehab25-Yarrie-Nimingarra": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP_Rehab_2025/BHP_2525 Rehab25-Yandi": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "NBY/NBY_2228_PiosPaddock_manned": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "RTIO Rehabilitation Phase 1": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "BHP Phase 2/Jimblebar haul": {
+    "resolutions": [
+      "3cm"
+    ]
+  },
+  "BHP Phase 2/Homestead creek": {
+    "resolutions": [
+      "3cm"
+    ]
+  },
+  "BHP Phase 2/Yandi MC": {
+    "resolutions": [
+      "3cm"
+    ]
+  },
+  "BHP Phase 2/Jimblebar rail": {
+    "resolutions": [
+      "3cm"
+    ]
+  },
+  "BHP Phase 2/Jinidi": {
+    "resolutions": [
+      "3cm"
+    ]
+  },
+  "BHP Phase 2/Whaleback": {
+    "resolutions": [
+      "3cm"
+    ]
+  },
+  "BHP Phase 2/Y6": {
+    "resolutions": [
+      "3cm"
+    ]
+  },
+  "BHP Phase 2/Yarrie sisters": {
+    "resolutions": [
+      "3cm"
+    ]
+  },
+  "BHP Phase 2/Yandi WD": {
+    "resolutions": [
+      "3cm"
+    ]
+  },
+  "RTIO_Rehab_2023/Ranger": {
+    "resolutions": [
+      "3cm"
+    ]
+  },
+  "SAN_2306/DegrussaMar2023": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "MRL_2253/OnslowMar2023": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "RTIO_Rehab_2024/RTIO_2428_Manned_RobeValley": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "RTIO_Rehab_2024/RTIO_2428_Manned_Paraburdoo": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "RTIO_Rehab_2024/RTIO_2428_Manned_GNAM": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "ALCOA/ALC_2520_Huntly_Willowdale_VegAss": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "FMG/FMG_2511_Mindy and EHR_Weeds": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "FMG/2002 Cloudbreak": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "FMG/FOR_2547_MindyGDV_Detection_Phase 2": {
+    "resolutions": [
+      "10cm"
+    ]
+  },
+  "FMG/FMG_2538_MindySouth_EHR_VHM": {
+    "resolutions": [
+      "10cm"
+    ]
+  }
+}

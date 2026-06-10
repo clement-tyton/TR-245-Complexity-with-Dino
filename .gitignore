@@ -7,4 +7,8 @@ __pycache__/
 blob_work/
 outputs/
 *.npy
+*.npz
 embedding_compare.png
+
+# model weights (large, fetched separately)
+dinov3_weights/

@@ -1,7 +1,7 @@
 [project]
 name = "complexity-with-dino"
-dynamic = ["version"]
-requires-python = ">=3.12"
+version = "0.2.0"
+requires-python = ">=3.14"
 
 dependencies = [
     "color-operations==0.3.0",
@@ -9,6 +9,7 @@ dependencies = [
     "matplotlib>=3.10.9",
     "pyarrow>=24.0.0",
     "tqdm>=4.68.1",
+    "bbox_to_tile_grid"
 ]
 
 [project.optional-dependencies]
@@ -29,7 +30,9 @@ default-groups = ["tytonai", "storage", "pytorch", "test"]
 [tool.uv.sources]
 "color-operations" = { index = "tytonai" }
 "dinov3-embedding" = { git = "https://github.com/millcrest/tytonai-python-activities", subdirectory = "dinov3_embedding", branch = "main" }
+"bbox_to_tile_grid" = { git = "https://github.com/millcrest/tytonai-python-activities", subdirectory = "bbox_to_tile_grid", branch = "main" }
 "dinov3" = { git = "https://github.com/facebookresearch/dinov3.git", rev = "31703e4cbf1ccb7c4a72daa1350405f86754b6d1" }
+
 torch = { index = "pytorch" }
 torchvision = { index = "pytorch" }
 "tytonai.core" = { index = "tytonai" }
@@ -52,10 +55,6 @@ explicit = true
 [build-system]
 requires = ["pdm-pep517"]
 build-backend = "pdm.pep517.api"
-
-[tool.pdm.version]
-source = "file"
-path = "dino_blob/__init__.py"
 
 [tool.pyright]
 venvPath = "."
