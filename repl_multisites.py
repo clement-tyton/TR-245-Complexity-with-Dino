@@ -13,9 +13,11 @@ import sys
 os.environ.setdefault("CUDA_VISIBLE_DEVICES", "1")
 
 try:                     # running as a file / in VS Code
-    _SRC = os.path.join(os.path.dirname(os.path.abspath(__file__)), "src")
+    _ROOT = os.path.dirname(os.path.abspath(__file__))
 except NameError:        # bare REPL paste (no __file__) -> cwd must be the repo root
-    _SRC = "src"
+    _ROOT = "."
+_SRC = os.path.join(_ROOT, "src")
+sys.path.insert(0, _ROOT)   # repo root -> import download_weights
 sys.path.insert(0, _SRC)
 for _m in ("config", "transforms", "dino", "pca", "plots", "store", "pipeline"):
     sys.modules.pop(_m, None)   # reload fresh from src/ on re-run
@@ -43,6 +45,18 @@ for k in SITES:
 print(f"resolvable: {len(ok)} | unresolved: {len(miss)}")
 for k, e in miss:
     print("  skip", k, "|", e)
+
+
+# %% CELL 3b — ensure DINO weights are downloaded PROPERLY (robust; skip if already complete) ---
+# WITHOUT this, CELL 4 -> setup_activity falls back to the activity's own downloader (128 parallel
+# range reads + full pre-allocation), which on a GCS timeout leaves a CORRUPT .pth that its
+# existence-only check then serves forever. Our downloader is sequential, resumable, size-validated
+# and returns instantly if the file is already complete.
+import asyncio                  # noqa: E402
+import dino                     # noqa: E402  (picks 7B vs ViT-L by this GPU's VRAM)
+import download_weights as dw   # noqa: E402  (repo-root module)
+_model = dino.pick_dino_model()                 # prints the GPU + chosen model
+asyncio.run(dw.download(_model))                # verbose, resumable; no-op if already on disk
 
 
 # %% CELL 4 — RUN (resume-safe; finished sites are skipped) --------------------------
