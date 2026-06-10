@@ -8,9 +8,17 @@
 # %% CELL 1 — path + imports + pick a site ------------------------------------------
 import os
 import sys
-+
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "src"))
-sys.path.insert(0,"src")
+
+try:                     # running as a file / in VS Code
+    _SRC = os.path.join(os.path.dirname(os.path.abspath(__file__)), "src")
+except NameError:        # pasted into a bare REPL (no __file__) -> cwd must be the repo root
+    _SRC = "src"
+sys.path.insert(0, _SRC)
+
+# drop any stale copies so re-running this cell reloads fresh from src/ (long REPL sessions
+# can cache an older/partial 'config' etc. in sys.modules -> AttributeError on new symbols)
+for _m in ("config", "transforms", "dino", "pca", "plots", "store"):
+    sys.modules.pop(_m, None)
 
 import config            # noqa: E402  (sets the DINO env on import — must come first)
 import transforms        # noqa: E402
@@ -18,9 +26,9 @@ import dino              # noqa: E402
 import pca               # noqa: E402
 import plots             # noqa: E402
 import store as sink     # noqa: E402  (src/store.py — persistence)
-"BHP_Rehab_2024/MWER2024"
+
 # Pick a site by its '<Project>/<Site>' key — tiles AND webmap come from /mnt/spatial (no local copy)
-SITE_KEY = "BHP Creeks 2022/Manned Bens Oasis Post Dry"
+SITE_KEY = "BHP_Rehab_2024/MWER2024"
 RES = "10cm"                                          # or None -> the site's native resolution
 site_id = config.site_id_from_key(SITE_KEY, RES)
 SITE_DIR = config.resolve_tiles(SITE_KEY, RES)        # training tiles on /mnt (Raster/ObjectData/...)
