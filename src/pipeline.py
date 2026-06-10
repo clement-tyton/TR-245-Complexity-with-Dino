@@ -77,7 +77,8 @@ def run_site(site_dir=None, *, site_key=None, res=None, rgb_path=None, out_root=
     webmap_tif = None
     if make_webmap and npz_paths:
         webmap_tif = os.path.join(out_root, site_id, "dino_pca_webmap.tif")
-        pca.build_pca_webmap(npz_paths, list(grid_w.geometry), grid_w.crs, webmap_tif)
+        pca.build_pca_webmap(npz_paths, list(grid_w.geometry), grid_w.crs, webmap_tif,
+                             webmap_path=rgb_path)
 
     if make_plots:
         import plots
@@ -87,7 +88,8 @@ def run_site(site_dir=None, *, site_key=None, res=None, rgb_path=None, out_root=
         plots.plot_grid(tiles_clip, area, grid, info=ginfo)
         if npz_paths:
             plots.plot_site_pca(npz_paths, list(grid_w.geometry),
-                                os.path.join(out_root, site_id, "site_patch_pca.png"))
+                                os.path.join(out_root, site_id, "site_patch_pca.png"),
+                                webmap_path=rgb_path)
 
     print(f"[{site_id}] done: {len(npz_paths)} cells -> {patch_dir}  |  {part_dir}/cells.parquet")
     return {"site_id": site_id, "n_tiles": len(tiles), "n_cells": len(grid_w), "ginfo": ginfo,

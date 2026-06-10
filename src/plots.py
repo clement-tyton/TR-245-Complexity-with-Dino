@@ -12,7 +12,7 @@ import rasterio
 from rasterio.windows import from_bounds
 
 import config
-from pca import pca_rgb, site_pca_canvas
+from pca import pca_rgb, site_pca_canvas, webmap_data_mask
 
 
 def _png(name):
@@ -133,9 +133,14 @@ def plot_qa_grid(tiles, tiles_clip, extent, area, grid, info=None, out_png=None,
     return out_png
 
 
-def plot_site_pca(npz_paths, geoms, out_png):
-    """Site patch-level PCA-RGB mosaic (PNG)."""
-    canvas, _, gsd = site_pca_canvas(npz_paths, geoms)
+def plot_site_pca(npz_paths, geoms, out_png, webmap_path=None):
+    """Site patch-level PCA-RGB mosaic (PNG). If webmap_path is given, no-data shows white
+    (matching the transparent nodata in the QGIS GeoTIFF)."""
+    canvas, transform, gsd = site_pca_canvas(npz_paths, geoms)
+    if webmap_path:
+        H, W = canvas.shape[:2]
+        canvas = canvas.copy()
+        canvas[~webmap_data_mask(webmap_path, transform, H, W)] = 1.0   # no-data -> white
     fig, ax = plt.subplots(figsize=(13, 13))
     ax.imshow(canvas); ax.axis("off")
     ax.set_title(f"site patch-level PCA-RGB — {len(npz_paths)} cells @ {gsd:.2f} m")

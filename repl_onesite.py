@@ -83,9 +83,11 @@ print(f"[{site_id}] {len(npz_paths)} cells -> {patch_dir}")
 
 # %% CELL 8 — site PCA-RGB mosaic (PNG) + georeferenced webmap (QGIS) ----------------
 print("->", plots.plot_site_pca(npz_paths, list(grid_w.geometry),
-                                os.path.join(config.EMB_ROOT, site_id, "site_patch_pca.png")))
+                                os.path.join(config.EMB_ROOT, site_id, "site_patch_pca.png"),
+                                webmap_path=WEBMAP))
 print("->", pca.build_pca_webmap(npz_paths, list(grid_w.geometry), grid_w.crs,
-                                 os.path.join(config.EMB_ROOT, site_id, "dino_pca_webmap.tif")))
+                                 os.path.join(config.EMB_ROOT, site_id, "dino_pca_webmap.tif"),
+                                 webmap_path=WEBMAP))
 
 
 # %% CELL 9 — (scale) fit a 256-d GPU PCA + project all patches ----------------------

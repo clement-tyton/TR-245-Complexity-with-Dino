@@ -12,6 +12,7 @@ from pathlib import Path
 
 import numpy as np
 import rasterio
+from rasterio.windows import from_bounds
 from numpy.lib import format as npy_format
 from tqdm import tqdm
 
@@ -125,14 +126,36 @@ def site_pca_canvas(npz_paths, geoms, pca=None, device="cuda"):
     return canvas, rasterio.Affine(gsd, 0, xmin, 0, -gsd, ymax), gsd
 
 
-def build_pca_webmap(npz_paths, geoms, crs, out_tif):
-    """Render the site PCA-RGB canvas as a 3-band uint8 GeoTIFF (CRS + transform) -> QGIS."""
+def webmap_data_mask(webmap_path, transform, H, W):
+    """(H, W) bool — True where the webmap has RGB data, over the canvas extent (one read).
+    Used to mark nodata in the PCA webmap so real no-data areas are transparent in QGIS."""
+    gsd = transform.a
+    xmin, ymax = transform.c, transform.f
+    xmax, ymin = xmin + W * gsd, ymax - H * gsd
+    with rasterio.open(webmap_path) as r:
+        m = r.read((1, 2, 3), window=from_bounds(xmin, ymin, xmax, ymax, transform=r.transform),
+                   boundless=True, fill_value=0, out_shape=(3, H, W))
+    return (m != 0).any(axis=0)
+
+
+def build_pca_webmap(npz_paths, geoms, crs, out_tif, webmap_path=None):
+    """Render the site PCA-RGB canvas as a 3-band uint8 GeoTIFF (CRS + transform) -> QGIS.
+
+    Valid pixels are remapped to 1..255 so 0 is reserved for nodata (a legit dark PCA patch
+    no longer reads as transparent). nodata = where the webmap has no RGB (if webmap_path is
+    given) else where the canvas was never painted.
+    """
     canvas, transform, gsd = site_pca_canvas(npz_paths, geoms)
-    arr = (canvas * 255).astype(np.uint8).transpose(2, 0, 1)    # band-major; 0 = nodata
+    H, W = canvas.shape[:2]
+    arr = (np.clip(canvas, 0, 1) * 254 + 1).astype(np.uint8)    # valid -> 1..255 (0 = nodata)
+    mask = (webmap_data_mask(webmap_path, transform, H, W) if webmap_path
+            else ~(canvas == 0).all(axis=2))                    # fallback: unpainted background
+    arr[~mask] = 0                                              # real no-data -> 0 -> transparent
+    arr = arr.transpose(2, 0, 1)                                # band-major
     os.makedirs(os.path.dirname(os.path.abspath(out_tif)), exist_ok=True)
-    with rasterio.open(out_tif, "w", driver="GTiff", height=arr.shape[1], width=arr.shape[2], count=3,
+    with rasterio.open(out_tif, "w", driver="GTiff", height=H, width=W, count=3,
                        dtype="uint8", crs=crs, transform=transform, photometric="RGB",
                        compress="DEFLATE", tiled=True, blockxsize=256, blockysize=256, nodata=0) as dst:
         dst.write(arr)
-    print(f"  {arr.shape[2]}x{arr.shape[1]}px @ {gsd:.2f} m | CRS {crs} -> {out_tif}")
+    print(f"  {W}x{H}px @ {gsd:.2f} m | CRS {crs} | {int(mask.sum())}/{H*W} data px -> {out_tif}")
     return out_tif
