@@ -10,7 +10,8 @@ failed finding central directory". This script instead:
   - downloads sequentially in small chunks with a live progress bar + MB/s,
   - writes to <file>.part and RESUMES from wherever a previous run stopped,
   - retries each chunk on timeout (backoff) instead of nuking the whole download,
-  - validates the result is a real torch zip before renaming to the final name.
+  - validates COMPLETENESS by size (the 7B checkpoint is legacy torch .tar, not a zip, so a
+    format check would wrongly reject it) before renaming to the final name.
 
 Usage (repo root, project venv), default = the 7B; pass vitl for the small one:
     .venv/bin/python download_weights.py            # dinov3_vit7b16
@@ -23,7 +24,6 @@ import asyncio
 import os
 import sys
 import time
-import zipfile
 from pathlib import Path
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "src"))
@@ -58,19 +58,25 @@ async def download(model: str) -> Path:
     print(f"GCS bucket     : {GCS_BUCKET}  (public, anonymous — no token)")
     print(f"object         : {model_path}")
 
-    if final.exists():
-        ok = zipfile.is_zipfile(final)
-        print(f"already on disk: {final}  ({_human(final.stat().st_size)}) "
-              f"-> {'valid torch zip, nothing to do' if ok else 'CORRUPT — deleting'}")
-        if ok:
-            return final
-        final.unlink()
-
     store = GCSStore(GCS_BUCKET, skip_signature=True,
                      client_options={"timeout": TIMEOUT, "connect_timeout": CONNECT_TIMEOUT})
     print(f"timeout        : {TIMEOUT} per request (connect {CONNECT_TIMEOUT})")
     size = (await store.head_async(model_path))["size"]
+
+    # Validate by COMPLETENESS (size), not format: the 7B checkpoint is legacy torch .tar, not a
+    # zip, so zipfile.is_zipfile would wrongly reject a perfectly good file. A truncated download
+    # is shorter than the remote object; a complete one matches it byte-for-byte.
+    if final.exists():
+        ok = final.stat().st_size == size
+        print(f"already on disk: {final}  ({_human(final.stat().st_size)} / {_human(size)}) "
+              f"-> {'complete, nothing to do' if ok else 'TRUNCATED — deleting'}")
+        if ok:
+            return final
+        final.unlink()
+
     done = part.stat().st_size if part.exists() else 0
+    if done > size:                                          # stale/oversized .part -> restart clean
+        print(f"  .part ({_human(done)}) > remote ({_human(size)}) -> discarding"); part.unlink(); done = 0
     print(f"remote size    : {_human(size)}")
     print(f"resuming from  : {_human(done)} ({100*done/size:.1f}%)\n" if done else "starting fresh\n")
 
@@ -99,9 +105,8 @@ async def download(model: str) -> Path:
                   end="", flush=True)
     print()
 
-    if not zipfile.is_zipfile(part):
-        part.unlink()
-        raise RuntimeError("downloaded file is not a valid torch zip — deleted .part, re-run.")
+    if part.stat().st_size != size:                          # completeness guard before promoting
+        raise RuntimeError(f"size mismatch {part.stat().st_size} != {size}; .part kept, re-run to resume.")
     part.rename(final)
     print(f"done -> {final}  ({_human(final.stat().st_size)}, {time.monotonic()-t0:.0f}s)")
     return final

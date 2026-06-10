@@ -41,6 +41,23 @@ def pick_dino_model(min_gb_7b=config.VRAM_GB_FOR_7B, verbose=True):
     return model
 
 
+def _trust_torch_load():
+    """PyTorch >=2.6 defaults torch.load(weights_only=True); the DINOv3 7B checkpoint is in the
+    legacy .tar format, which weights_only can't read -> load fails. The activity calls torch.load
+    without weights_only, so we flip the default to False (safe: trusted company GCS weights, and
+    the result only feeds model.load_state_dict). Idempotent — guarded so repeated per-site calls
+    don't nest wrappers."""
+    import torch
+    if getattr(torch.load, "_trusted", False):
+        return
+    _orig = torch.load
+    def _load(*a, **k):
+        k.setdefault("weights_only", False)
+        return _orig(*a, **k)
+    _load._trusted = True
+    torch.load = _load
+
+
 def setup_activity(webmap_path, grid_gdf, out_fgb=None,
                    dino_model=config.DINO_MODEL, high_res=config.HIGH_RES):
     """Instantiate the activity once + load its model. Returns (act, model, device, grid_in_raster_crs).
@@ -64,6 +81,7 @@ def setup_activity(webmap_path, grid_gdf, out_fgb=None,
     inp = Input.model_validate({"bbox": out_fgb, "dino_model": dino_model, "high_res": high_res,
                                 "rasters": [{"bands": ["RED", "GREEN", "BLUE"], "raster_file": webmap_path}]})
     act = Dinov3Embedding(inp, "", S3Mock(working_dir="/"))
+    _trust_torch_load()                                # PyTorch 2.6 weights_only fix (legacy .tar 7B)
     model, device = asyncio.run(act.load_model())      # the activity's own loader
     return act, model, device, grid_w
 
