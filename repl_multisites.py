@@ -12,6 +12,11 @@ import sys
 # (our modules import torch lazily, so setting it here is enough). Edit/remove as needed.
 os.environ.setdefault("CUDA_VISIBLE_DEVICES", "1")
 
+# Inference dtype. "bf16" casts the model+input to bfloat16: weights ~half VRAM (7B: 25->12.5GB)
+# and activations halved -> fixes OOM at high upscaling. Outputs are still stored fp32, and the
+# upscaling (upsample/high_res) is untouched. Set to "fp32" to revert. MUST be set before import config.
+os.environ.setdefault("DINO_DTYPE", "bf16")
+
 try:                     # running as a file / in VS Code
     _ROOT = os.path.dirname(os.path.abspath(__file__))
 except NameError:        # bare REPL paste (no __file__) -> cwd must be the repo root

@@ -82,7 +82,11 @@ def setup_activity(webmap_path, grid_gdf, out_fgb=None,
                                 "rasters": [{"bands": ["RED", "GREEN", "BLUE"], "raster_file": webmap_path}]})
     act = Dinov3Embedding(inp, "", S3Mock(working_dir="/"))
     _trust_torch_load()                                # PyTorch 2.6 weights_only fix (legacy .tar 7B)
-    model, device = asyncio.run(act.load_model())      # the activity's own loader
+    model, device = asyncio.run(act.load_model())      # the activity's own loader (FP32)
+    if config.DINO_DTYPE == "bf16":                    # halve weight VRAM (25->12.5GB on 7B) + bf16 activations
+        import torch
+        model = model.to(torch.bfloat16)               # upsample/grid untouched -> upscaling preserved
+        print("dtype: bfloat16 (weights ~half VRAM, activations halved; outputs cast back to fp32)")
     return act, model, device, grid_w
 
 
@@ -116,11 +120,12 @@ def embed_cell_tokens(act, model, device, bbox, webmap_path, upsample=None):
     with rasterio.open(webmap_path) as r:
         rgb = r.read((1, 2, 3), window=from_bounds(*bbox, transform=r.transform),
                      boundless=True, fill_value=0).transpose(1, 2, 0)
-    x = make_transform(rgb.shape[0] * up)(Image.fromarray(rgb)).unsqueeze(0).to(device)
+    mdtype = next(model.parameters()).dtype         # fp32, or bf16 if DINO_DTYPE=bf16
+    x = make_transform(rgb.shape[0] * up)(Image.fromarray(rgb)).unsqueeze(0).to(device=device, dtype=mdtype)
     with torch.inference_mode():
         f = model.forward_features(x)               # dict: x_norm_clstoken + x_norm_patchtokens
-    cls = f["x_norm_clstoken"][0].float().cpu().numpy()             # (C,)
-    pt = f["x_norm_patchtokens"][0].float().cpu().numpy()           # (gh*gw, C)
+    cls = f["x_norm_clstoken"][0].float().cpu().numpy()             # (C,) -> fp32 for storage
+    pt = f["x_norm_patchtokens"][0].float().cpu().numpy()           # (gh*gw, C) -> fp32 for storage
     g = int(round(pt.shape[0] ** 0.5))
     patch = pt.reshape(g, g, -1).transpose(2, 0, 1)                 # (C, gh, gw)
     return rgb, patch, cls, tf_from_bounds(*bbox, patch.shape[2], patch.shape[1])

@@ -133,6 +133,7 @@ def _write_run_manifest(out_root, keys, res, run_kw):
         "cuda_visible_devices": dev, "emb_root": out_root, "res": res,
         "dino_model": run_kw.get("dino_model", config.DINO_MODEL),
         "high_res": run_kw.get("high_res", config.HIGH_RES),
+        "dino_dtype": config.DINO_DTYPE,
         "upsample": run_kw.get("upsample", None),
         "vram_gb_for_7b": config.VRAM_GB_FOR_7B,
         "tile_patches": config.TILE_PATCHES, "min_data_cov": config.MIN_DATA_COV,

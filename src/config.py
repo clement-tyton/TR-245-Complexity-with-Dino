@@ -38,6 +38,7 @@ os.makedirs(PIC_DIR, exist_ok=True)
 DINO_MODEL = os.environ.get("DINO_MODEL", "auto")   # "auto" picks 7B vs ViT-L by GPU VRAM
 VRAM_GB_FOR_7B = float(os.environ.get("DINO_VRAM_GB_FOR_7B", "40"))  # >= this -> dinov3_vit7b16
 HIGH_RES = os.environ.get("DINO_HIGH_RES", "1") == "1"       # default ON; doubles upsample (2048 -> 128x128 grid). Set DINO_HIGH_RES=0 to disable
+DINO_DTYPE = os.environ.get("DINO_DTYPE", "fp32").lower()    # "bf16" -> cast model+input to bfloat16 (weights ~half VRAM, activations halved); outputs still stored fp32
 TILE_PATCHES = 1            # grid cell native size = TILE_PATCHES * patch_size
 MIN_DATA_COV = 0.02         # drop grid cells with < this fraction of RGB data (all-black voids)
 DINO_PATCH = 16

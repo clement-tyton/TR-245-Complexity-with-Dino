@@ -91,6 +91,7 @@ def write_site_meta(site_id, part_dir, ginfo, npz_paths, *, dino_model, high_res
     meta = {
         "site_id": site_id,
         "dino_model": dino_model, "high_res": bool(high_res), "upsample": upsample,
+        "dino_dtype": config.DINO_DTYPE,
         "embed_dim": c, "patch_grid": [gh, gw],
         "patch_px": ginfo.get("patch_px"), "native_res_m": ginfo.get("native_res_m"),
         "cell_ground_m": cell_m,
