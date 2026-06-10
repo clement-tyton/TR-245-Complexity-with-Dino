@@ -12,6 +12,7 @@ from pathlib import Path
 
 import numpy as np
 import rasterio
+from rasterio.enums import ColorInterp
 from rasterio.windows import from_bounds
 from numpy.lib import format as npy_format
 from tqdm import tqdm
@@ -154,23 +155,26 @@ def webmap_data_mask(webmap_path, transform, H, W):
 
 
 def build_pca_webmap(npz_paths, geoms, crs, out_tif, webmap_path=None):
-    """Render the site PCA-RGB canvas as a 3-band uint8 GeoTIFF (CRS + transform) -> QGIS.
+    """Render the site PCA-RGB canvas as a 4-band RGBA uint8 GeoTIFF (CRS + transform) -> QGIS.
 
-    Valid pixels are remapped to 1..255 so 0 is reserved for nodata (a legit dark PCA patch
-    no longer reads as transparent). nodata = where the webmap has no RGB (if webmap_path is
-    given) else where the canvas was never painted.
+    Transparency is carried by a real alpha band (band 4), which QGIS always honors -- unlike a
+    per-band nodata value, which QGIS ignores for RGB color renderers (no-data then reads as
+    black). alpha = where the webmap has RGB (if webmap_path is given) else where the canvas was
+    painted. RGB is the raw 0..255 PCA colour (no 1..255 remap needed -- alpha, not 0, marks nodata).
     """
     canvas, transform, gsd = site_pca_canvas(npz_paths, geoms)
     H, W = canvas.shape[:2]
-    arr = (np.clip(canvas, 0, 1) * 254 + 1).astype(np.uint8)    # valid -> 1..255 (0 = nodata)
+    rgb = (np.clip(canvas, 0, 1) * 255).astype(np.uint8)
     mask = (webmap_data_mask(webmap_path, transform, H, W) if webmap_path
             else ~(canvas == 0).all(axis=2))                    # fallback: unpainted background
-    arr[~mask] = 0                                              # real no-data -> 0 -> transparent
-    arr = arr.transpose(2, 0, 1)                                # band-major
+    alpha = (mask.astype(np.uint8) * 255)                       # 255 = opaque data, 0 = transparent
+    arr = np.concatenate([rgb, alpha[..., None]], axis=2).transpose(2, 0, 1)   # (4, H, W) band-major
     os.makedirs(os.path.dirname(os.path.abspath(out_tif)), exist_ok=True)
-    with rasterio.open(out_tif, "w", driver="GTiff", height=H, width=W, count=3,
+    with rasterio.open(out_tif, "w", driver="GTiff", height=H, width=W, count=4,
                        dtype="uint8", crs=crs, transform=transform, photometric="RGB",
-                       compress="DEFLATE", tiled=True, blockxsize=256, blockysize=256, nodata=0) as dst:
+                       alpha="YES",                             # band 4 -> true alpha (ExtraSamples)
+                       compress="DEFLATE", tiled=True, blockxsize=256, blockysize=256) as dst:
         dst.write(arr)
+        dst.colorinterp = [ColorInterp.red, ColorInterp.green, ColorInterp.blue, ColorInterp.alpha]
     print(f"  {W}x{H}px @ {gsd:.2f} m | CRS {crs} | {int(mask.sum())}/{H*W} data px -> {out_tif}")
     return out_tif
