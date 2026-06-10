@@ -8,6 +8,10 @@
 import os
 import sys
 
+# Single GPU: run everything on this physical device. MUST be set before any torch import
+# (our modules import torch lazily, so setting it here is enough). Edit/remove as needed.
+os.environ.setdefault("CUDA_VISIBLE_DEVICES", "1")
+
 try:                     # running as a file / in VS Code
     _SRC = os.path.join(os.path.dirname(os.path.abspath(__file__)), "src")
 except NameError:        # bare REPL paste (no __file__) -> cwd must be the repo root

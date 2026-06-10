@@ -103,10 +103,10 @@ def grid(site):
 status()
 
 # %% CELL 3 — blobs of a site (only the embedded ones) ------------------------------
-blobs("29Metals", done=True)
+blobs("BHP Rehab 2022__Northern_Nim-Shay2022__10cm__v2_tytonai_rg", done=True)
 
 # %% CELL 4 — observe a blob ---------------------------------------------------------
-view("29Metals", "f7400", "embedding")    # RGB | PCA-RGB of the DINO embedding
+view("BHP Rehab 2022__Northern_Nim-Shay2022__10cm__v2_tytonai_rg", "CU_Corre", "embedding")    # RGB | PCA-RGB of the DINO embedding
 # view("29Metals", "f7400", "cluster")    # RGB | PCA-RGB | KMeans label map
 # view("29Metals", "e127",  "boxes")      # bbox outlines + coverage heatmap
 

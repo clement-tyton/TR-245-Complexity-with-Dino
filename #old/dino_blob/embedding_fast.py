@@ -38,8 +38,13 @@ def _embed_array(model, device, img_arr, upsample, bf16):
 
 
 def embed_blob_fast(blob_dir, out_tif, dino_model=config.DINO_MODEL, high_res=config.HIGH_RES,
-                    bf16=False, make_box_bar=None):
-    """Embed one blob (blob.tif + boxes.fgb) without per-box COGs. Writes out_tif, returns it."""
+                    bf16=False, make_box_bar=None, nodata_frac=0.98):
+    """Embed one blob (blob.tif + boxes.fgb) without per-box COGs. Writes out_tif, returns it.
+
+    Boxes that are >= nodata_frac all-black (holes from missing tiles) are skipped — no GPU
+    spent and those cells stay zero-vectors (maskable downstream) instead of garbage embeddings.
+    Returns None if EVERY box is nodata.
+    """
     from tytonai.test.s3_mock import S3Mock
     from dinov3_embedding.io_schema.model import Input
     from dinov3_embedding.main import Dinov3Embedding
@@ -49,6 +54,8 @@ def embed_blob_fast(blob_dir, out_tif, dino_model=config.DINO_MODEL, high_res=co
     try:
         os.chdir(blob_dir)
         bboxes = [tuple(geom.bounds) for geom in gpd.read_file("boxes.fgb").geometry]
+        with rasterio.open("blob.tif") as s:
+            crs = s.crs
         inp = Input.model_validate({"bbox": "boxes.fgb", "dino_model": dino_model, "high_res": high_res,
                                     "rasters": [{"bands": ["RED", "GREEN", "BLUE"], "raster_file": "blob.tif"}]})
         act = Dinov3Embedding(inp, "", S3Mock())
@@ -56,25 +63,29 @@ def embed_blob_fast(blob_dir, out_tif, dino_model=config.DINO_MODEL, high_res=co
         patch_size = act.patch_size
 
         async def _collect():
-            tiles, crs = [], None
+            tiles, skipped = [], 0
             bar = make_box_bar(len(bboxes)) if make_box_bar else None
             for bbox in bboxes:
                 with muted():   # silence the activity's per-box read/_trim_output prints
                     img_data, window, out_window, tf = await act.read_image_bands(bbox, patch_size)
                     prepared = np.concatenate([b.img_data for b in img_data.bands], axis=0).transpose(1, 2, 0)
-                    emb = _embed_array(model, device, prepared, upsample, bf16)
-                    trimmed = act._trim_output(emb, window, out_window)     # (C, th, tw)
-                    px = (tf.a * out_window.width) / trimmed.shape[2]       # = embed_gsd
-                    py = (tf.e * out_window.height) / trimmed.shape[1]
-                    crs = img_data.bands[0].raster_data.crs
-                tiles.append((trimmed, tf.c, tf.f, px, py))                 # array + world origin + gsd
-                if bar:                                                     # bar writes to __stderr__, survives mute
+                    if (prepared == 0).all(axis=2).mean() >= nodata_frac:   # hole -> skip, no embed
+                        skipped += 1
+                    else:
+                        emb = _embed_array(model, device, prepared, upsample, bf16)
+                        trimmed = act._trim_output(emb, window, out_window)   # (C, th, tw)
+                        px = (tf.a * out_window.width) / trimmed.shape[2]     # = embed_gsd
+                        py = (tf.e * out_window.height) / trimmed.shape[1]
+                        tiles.append((trimmed, tf.c, tf.f, px, py))           # array + world origin + gsd
+                if bar:                                                       # bar writes to __stderr__
                     bar.update(1)
             if bar:
                 bar.close()
-            return tiles, crs
+            return tiles, skipped
 
-        tiles, crs = asyncio.run(_collect())
+        tiles, skipped = asyncio.run(_collect())
+        if not tiles:                                  # whole blob is nodata -> nothing to write
+            return None
 
         # union + mean-blend in RAM (same math as mean_mosaic, no disk round-trip)
         px, py = tiles[0][3], tiles[0][4]
