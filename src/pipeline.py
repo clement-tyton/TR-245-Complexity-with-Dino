@@ -19,19 +19,29 @@ import store as sink   # src/store.py (persistence) — named 'store' to avoid t
 import pca
 
 
-def run_site(site_dir, *, rgb_path=None, res=None, out_root=config.EMB_ROOT,
+def run_site(site_dir=None, *, site_key=None, res=None, rgb_path=None, out_root=config.EMB_ROOT,
              dino_model=config.DINO_MODEL, high_res=config.HIGH_RES,
              tile_patches=config.TILE_PATCHES, min_data_cov=config.MIN_DATA_COV,
              upsample=None, make_plots=False, make_webmap=True, show_bar=True) -> dict:
     """Build + embed every grid cell of one site. Returns a summary dict.
 
-    rgb_path: the webmap RGB raster. If None, resolved from config/site_rgb_paths.json via the
-    site's '<Project>/<Site>' key (res picked from sites_to_resolutions.json if res is None).
+    Two ways to point at a site:
+      - site_key='<Project>/<Site>' (+ optional res): tiles + webmap resolved from the shared
+        /mnt store (config.resolve_tiles / resolve_rgb) — this is the MULTI-SITE entry point.
+      - site_dir=<path>: an explicit tiles dir (e.g. a local copy); key/res derived from it.
     Outputs under out_root/<site_id>/ + the Hive-partitioned out_root/cells/site_id=<id>/.
     """
-    site_id = config.site_id_from_dir(site_dir)
+    if site_dir is None:
+        if site_key is None:
+            raise ValueError("pass site_key='<Project>/<Site>' (multi-site) or site_dir=<path>")
+        res = res or config.default_res(site_key)
+        site_dir = config.resolve_tiles(site_key, res)        # /mnt ObjectData tiles
+        site_id = config.site_id_from_key(site_key, res)
+    else:
+        site_key = config.site_key_from_dir(site_dir)
+        site_id = config.site_id_from_dir(site_dir)
     if rgb_path is None:
-        rgb_path = config.resolve_rgb(config.site_key_from_dir(site_dir), res)["rgb_path"]
+        rgb_path = config.resolve_rgb(site_key, res)["rgb_path"]
 
     tiles = transforms.read_tile_bboxes(site_dir)
     tiles_clip, extent = transforms.crop_tiles_to_webmap(tiles, rgb_path)
@@ -80,12 +90,15 @@ def run_site(site_dir, *, rgb_path=None, res=None, out_root=config.EMB_ROOT,
 if __name__ == "__main__":
     import argparse
     ap = argparse.ArgumentParser(description="Embed one site's grid with DINOv3 + PCA webmap.")
-    ap.add_argument("site_dir", help="…/<Project>/<Site>/<res>/v2_tytonai_rg")
+    g = ap.add_mutually_exclusive_group(required=True)
+    g.add_argument("--site-key", help="'<Project>/<Site>' — resolves tiles + webmap from /mnt")
+    g.add_argument("--site-dir", help="explicit tiles dir …/<res>/v2_tytonai_rg (e.g. a local copy)")
+    ap.add_argument("--res", default=None, help="resolution (e.g. 10cm); default = the site's native")
     ap.add_argument("--rgb-path", default=None, help="override the webmap raster (else resolved from config)")
     ap.add_argument("--out-root", default=config.EMB_ROOT)
     ap.add_argument("--upsample", type=int, default=None, help="forward upscale (2=1024, 4=2048)")
     ap.add_argument("--no-webmap", dest="make_webmap", action="store_false")
     ap.add_argument("--plots", dest="make_plots", action="store_true")
     a = ap.parse_args()
-    run_site(a.site_dir, rgb_path=a.rgb_path, out_root=a.out_root, upsample=a.upsample,
-             make_webmap=a.make_webmap, make_plots=a.make_plots)
+    run_site(site_dir=a.site_dir, site_key=a.site_key, res=a.res, rgb_path=a.rgb_path,
+             out_root=a.out_root, upsample=a.upsample, make_webmap=a.make_webmap, make_plots=a.make_plots)

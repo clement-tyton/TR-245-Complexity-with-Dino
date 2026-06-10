@@ -27,6 +27,8 @@ os.environ.setdefault("SAVE_DEBUG_IMG", "false")
 _SRC_DIR = os.path.dirname(os.path.abspath(__file__))
 _REPO_ROOT = os.path.dirname(_SRC_DIR)
 TRAIN_ROOT = os.environ.get("DINO_TRAIN_ROOT", "/home/clement/local_copy_train_data")
+SITE_DATA_ROOT = os.environ.get("DINO_SITE_DATA_ROOT", "/mnt/spatial/DeepThought/SiteData")  # shared store
+DATASET_VERSION = os.environ.get("DINO_DATASET_VERSION", "v2_tytonai_rg")  # = config dataset_version
 CONFIG_DIR = os.environ.get("DINO_CONFIG_DIR", os.path.join(_REPO_ROOT, "config"))
 PIC_DIR = os.environ.get("DINO_PIC_DIR", os.path.join(_REPO_ROOT, "outputs", "pictures"))
 EMB_ROOT = os.environ.get("DINO_EMB_ROOT", "/mnt/ai/DeepThought/dino_embeddings")  # shared net store
@@ -84,6 +86,33 @@ def site_key_from_dir(site_dir: str, train_root: str = TRAIN_ROOT) -> str:
     return os.sep.join(parts[:-2]) if len(parts) >= 2 else rel
 
 
+def default_res(site_key: str) -> str:
+    """The site's native/first resolution from config/sites_to_resolutions.json."""
+    rr = _load_json("sites_to_resolutions.json").get(site_key, {}).get("resolutions")
+    if not rr:
+        raise KeyError(f"site '{site_key}' not in sites_to_resolutions.json")
+    return rr[0]
+
+
+def site_id_from_key(site_key: str, res: str) -> str:
+    """Output-path site_id from a '<Project>/<Site>' key + resolution. Matches
+    site_id_from_dir() exactly so /mnt-driven and local-driven runs share output paths."""
+    return re.sub(r"[^0-9A-Za-z]+", "_", f"{site_key}/{res}/{DATASET_VERSION}").strip("_")
+
+
+def resolve_tiles(site_key: str, res: str | None = None) -> str:
+    """Training-tile dir on the shared /mnt store (the multi-site source — no local copy).
+
+    Layout: <SITE_DATA_ROOT>/<Project>/<Site>/Raster/ObjectData/<res>/<DATASET_VERSION>/{train,val}.
+    This is the SOURCE side of the copy_sitedata_local.sh script (which drops Raster/ObjectData/).
+    """
+    res = res or default_res(site_key)
+    d = os.path.join(SITE_DATA_ROOT, site_key, "Raster", "ObjectData", res, DATASET_VERSION)
+    if not os.path.isdir(d):
+        raise FileNotFoundError(f"no training tiles at {d}")
+    return d
+
+
 def resolve_rgb(site_key: str, res: str | None = None) -> dict:
     """Resolve a site's RGB raster from config/site_rgb_paths.json. Returns the entry dict
     ({rgb_path, source, bands, crs, size, ...}). If res is None, pick the site's resolution
@@ -94,8 +123,7 @@ def resolve_rgb(site_key: str, res: str | None = None) -> dict:
                        f"({len(paths)} sites; e.g. {list(paths)[:3]})")
     by_res = paths[site_key]
     if res is None:
-        res = _load_json("sites_to_resolutions.json").get(site_key, {}).get(
-            "resolutions", list(by_res))[0]
+        res = default_res(site_key) if site_key in _load_json("sites_to_resolutions.json") else list(by_res)[0]
     if res not in by_res:
         raise KeyError(f"resolution '{res}' not for site '{site_key}' (have {list(by_res)})")
     rec = by_res[res]

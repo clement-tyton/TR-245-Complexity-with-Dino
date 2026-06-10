@@ -8,8 +8,9 @@
 # %% CELL 1 — path + imports + pick a site ------------------------------------------
 import os
 import sys
-
++
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "src"))
+sys.path.insert(0,"src")
 
 import config            # noqa: E402  (sets the DINO env on import — must come first)
 import transforms        # noqa: E402
@@ -17,11 +18,14 @@ import dino              # noqa: E402
 import pca               # noqa: E402
 import plots             # noqa: E402
 import store as sink     # noqa: E402  (src/store.py — persistence)
-
-SITE_DIR = "/home/clement/local_copy_train_data/BHP Creeks 2022/Manned Bens Oasis Post Dry/10cm/v2_tytonai_rg"
-site_id = config.site_id_from_dir(SITE_DIR)
-WEBMAP = config.resolve_rgb(config.site_key_from_dir(SITE_DIR))["rgb_path"]   # resolved from config/
-print("site:", site_id, "\nwebmap:", WEBMAP)
+"BHP_Rehab_2024/MWER2024"
+# Pick a site by its '<Project>/<Site>' key — tiles AND webmap come from /mnt/spatial (no local copy)
+SITE_KEY = "BHP Creeks 2022/Manned Bens Oasis Post Dry"
+RES = "10cm"                                          # or None -> the site's native resolution
+site_id = config.site_id_from_key(SITE_KEY, RES)
+SITE_DIR = config.resolve_tiles(SITE_KEY, RES)        # training tiles on /mnt (Raster/ObjectData/...)
+WEBMAP = config.resolve_rgb(SITE_KEY, RES)["rgb_path"]  # webmap on /mnt
+print("site:", site_id, "\ntiles:", SITE_DIR, "\nwebmap:", WEBMAP)
 
 
 # %% CELL 2 — read tile bboxes ------------------------------------------------------
