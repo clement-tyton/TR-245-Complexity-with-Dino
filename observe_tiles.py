@@ -54,10 +54,16 @@ def main():
     n = int(sys.argv[2]) if len(sys.argv) > 2 else 12
     zpath = _find_zarr(arg)
     site = os.path.basename(os.path.dirname(zpath))
-    z = zarr.open_array(zpath, mode="r")                 # (n_cells, gh, gw, C) fp16
-    n_written = z.shape[0]
-    idxs = list(range(max(0, n_written - n), n_written))  # newest n by index
-    print(f"site: {site}\npatches.zarr {z.shape} {z.dtype} — showing cells {idxs[0]}..{idxs[-1]}")
+    z = zarr.open_array(zpath, mode="r")                 # (n_cells, gh, gw, C) fp16, FULL shape pre-allocated
+    # The array is pre-allocated to n_cells; unwritten cells read back as fill_value (0). Only show
+    # cells actually written = those with a chunk on disk under patches.zarr/c/<i>/... (newest first).
+    cdir = os.path.join(zpath, "c")
+    written = sorted(int(d) for d in os.listdir(cdir) if d.isdigit()) if os.path.isdir(cdir) else []
+    if not written:
+        sys.exit(f"no cells written yet in {zpath}")
+    idxs = written[-n:]                                   # the n most-recently-written cells
+    print(f"site: {site}\npatches.zarr {z.shape} {z.dtype} — {len(written)}/{z.shape[0]} cells written, "
+          f"showing {idxs[0]}..{idxs[-1]}")
 
     grids = []
     for i in idxs:
