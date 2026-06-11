@@ -30,13 +30,35 @@ SITE_DATA_ROOT = os.environ.get("DINO_SITE_DATA_ROOT", "/mnt/spatial/DeepThought
 DATASET_VERSION = os.environ.get("DINO_DATASET_VERSION", "v2_tytonai_rg")  # = config dataset_version
 CONFIG_DIR = os.environ.get("DINO_CONFIG_DIR", os.path.join(_REPO_ROOT, "config"))
 PIC_DIR = os.environ.get("DINO_PIC_DIR", os.path.join(_REPO_ROOT, "outputs", "pictures"))
-EMB_ROOT = os.environ.get("DINO_EMB_ROOT", "/mnt/ai/DeepThought/dino_embeddings")  # shared net store
+_EMB_BASE = os.environ.get("DINO_EMB_ROOT", "/mnt/ai/DeepThought/dino_embeddings")  # shared net store (base)
 STATS_PARQUET = os.path.join(CONFIG_DIR, "tiles_stat_db", "site_resolution.parquet")  # multi-site only
 os.makedirs(PIC_DIR, exist_ok=True)
 
 # ---- tunables ----
 DINO_MODEL = os.environ.get("DINO_MODEL", "auto")   # "auto" picks 7B vs ViT-L by GPU VRAM
 VRAM_GB_FOR_7B = float(os.environ.get("DINO_VRAM_GB_FOR_7B", "40"))  # >= this -> dinov3_vit7b16
+
+
+def resolve_model_tag(model: str = DINO_MODEL) -> str:
+    """The concrete model name used to namespace outputs. Resolves "auto" via a cheap VRAM
+    probe (no heavy `dino`/activity import) so EMB_ROOT can be model-scoped AT IMPORT — store.py
+    binds config.EMB_ROOT as a default arg, so the tag must be known before that import."""
+    if model and model != "auto":
+        return model
+    try:                                            # mirror dino.pick_dino_model's threshold
+        import torch
+        if torch.cuda.is_available():
+            gb = torch.cuda.get_device_properties(0).total_memory / 1e9
+            return "dinov3_vit7b16" if gb >= VRAM_GB_FOR_7B else "dinov3_vitl16"
+    except Exception:
+        pass
+    return "dinov3_vitl16"
+
+
+# Outputs are MODEL-SCOPED: <base>/<model> so ViT-L and 7B runs never overwrite each other
+# (same site_id otherwise collides). Override the base with DINO_EMB_ROOT.
+MODEL_TAG = resolve_model_tag()
+EMB_ROOT = os.path.join(_EMB_BASE, MODEL_TAG)
 HIGH_RES = os.environ.get("DINO_HIGH_RES", "1") == "1"       # default ON; doubles upsample (2048 -> 128x128 grid). Set DINO_HIGH_RES=0 to disable
 DINO_DTYPE = os.environ.get("DINO_DTYPE", "fp32").lower()    # "bf16" -> cast model+input to bfloat16 (weights ~half VRAM, activations halved); outputs still stored fp32
 TILE_PATCHES = 1            # grid cell native size = TILE_PATCHES * patch_size
