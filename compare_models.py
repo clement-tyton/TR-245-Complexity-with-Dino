@@ -9,8 +9,12 @@ cell — only the embedding width differs (1024 vs 4096). For a site embedded by
       — a label-free proxy for how much of its width the model actually uses (is 4096 real or
       redundant vs 1024?), plus the explained-variance curves.
 
+Pass a site_key ("Project/Site") instead of a site_id to also show the SOURCE RGB on the left
+(rebuilds the grid like observe_tiles, so it works mid-run before cells.parquet exists).
+
 Usage:
-    python compare_models.py <site_id> [n_cells] [model_a model_b ...]
+    python compare_models.py <site_id> [n_cells] [model_a model_b ...]      # PCA columns only
+    python compare_models.py "<Project>/<Site>" [n_cells] [models...]       # source RGB | per-model PCA
     # default models: dinov3_vitl16 dinov3_vit7b16 ; default n_cells: 4
 """
 import os
@@ -18,6 +22,8 @@ import sys
 
 import numpy as np
 import zarr
+
+import observe_tiles as ot                      # reuse grid rebuild + RGB window read
 
 BASE = os.environ.get("DINO_EMB_ROOT", "/mnt/ai/DeepThought/dino_embeddings")
 DEFAULT_MODELS = ["dinov3_vitl16", "dinov3_vit7b16"]
@@ -64,11 +70,17 @@ def _eff_dim(z, written, n_cells=4, sample=15000, var=0.90, max_k=400, seed=0):
 def main():
     if len(sys.argv) < 2:
         sys.exit(__doc__)
-    site_id = sys.argv[1]
+    arg1 = sys.argv[1]
     n, models = 4, []
     for a in sys.argv[2:]:
         (models.append(a) if not a.isdigit() else (n := int(a)))
     models = models or DEFAULT_MODELS
+
+    rgb_mode = "/" in arg1                        # site_key -> also show the source RGB column
+    if rgb_mode:
+        site_id, grid_w, rgb_path = ot._grid_and_rgb(arg1)
+    else:
+        site_id = arg1
 
     avail = {}                                          # model -> (zarr, written-set, written-list)
     for m in models:
@@ -102,15 +114,23 @@ def main():
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
     rgb = {m: _pca_rgb(avail[m][0], idxs) for m in mods}
-    fig, axes = plt.subplots(len(idxs), len(mods), figsize=(len(mods) * 3, len(idxs) * 3), squeeze=False)
+    src = {i: ot._read_rgb(rgb_path, grid_w.geometry.iloc[i]) for i in idxs} if rgb_mode else {}
+    cols = (["__rgb__"] + mods) if rgb_mode else mods       # optional source-RGB column on the left
+    fig, axes = plt.subplots(len(idxs), len(cols), figsize=(len(cols) * 3, len(idxs) * 3), squeeze=False)
     for r, i in enumerate(idxs):
-        for c, m in enumerate(mods):
-            axes[r, c].imshow(rgb[m][r]); axes[r, c].axis("off")
+        for c, col in enumerate(cols):
+            if col == "__rgb__":
+                axes[r, c].imshow(src[i])
+                title = "source RGB"
+            else:
+                axes[r, c].imshow(rgb[col][r])
+                title = f"{col}\n{avail[col][0].shape[-1]}-d"
+            axes[r, c].axis("off")
             if r == 0:
-                axes[r, c].set_title(f"{m}\n{avail[m][0].shape[-1]}-d", fontsize=9)
+                axes[r, c].set_title(title, fontsize=9)
         axes[r, 0].text(-0.08, 0.5, f"cell {i}", transform=axes[r, 0].transAxes,
                         rotation=90, va="center", ha="right", fontsize=8)
-    fig.suptitle(f"{site_id} — same cells, PCA-RGB per model", fontsize=11)
+    fig.suptitle(f"{site_id} — same cells: {'source RGB | ' if rgb_mode else ''}PCA-RGB per model", fontsize=11)
     fig.tight_layout()
     os.makedirs("outputs", exist_ok=True)
     out1 = os.path.join("outputs", f"compare_{site_id}_cells.png")
