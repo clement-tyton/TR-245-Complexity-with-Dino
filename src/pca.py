@@ -34,22 +34,76 @@ def pca_rgb(emb, max_fit=200_000):
 
 
 class GPUPCA:
-    """Fitted PCA (.mean_/.components_/.n_components_) for transform_all_tiles. Basis =
-    covariance/eigh on a random patch subsample (the batch PCA). For a true all-patch fit,
-    accumulate mean + X^T X over every cell, or use sklearn IncrementalPCA."""
-    def __init__(self, refs, n_components=256, normalize=True, max_fit=500_000, seed=0):
+    """Fitted PCA (.mean_/.components_/.n_components_/.explained_variance_ratio_) for
+    transform_all_tiles.
+
+    EXACT all-patch fit by default (max_fit=None): ONE streaming pass that accumulates sum_x
+    and the uncentered Gram sum_xx = X^T X over EVERY patch of EVERY tile, in fp64 on GPU. The
+    centered covariance is then recovered algebraically (cov = (sum_xx - n·mean·mean^T)/(n-1))
+    and a single eigh gives all components. No subsampling -> no sampling noise on the tail
+    components (matters for 256-d KMeans/clustering). Same one-pass I/O as the old subsample fit,
+    but memory is bounded by the C×C accumulator (~8 MB at C=1024) instead of a patch buffer.
+
+    Pass max_fit=<int> to fall back to the old random-subsample fit (used by the 3-comp RGB
+    webmap, where exactness is irrelevant)."""
+    def __init__(self, refs, n_components=256, normalize=True, max_fit=None, seed=0, device=None):
+        if max_fit is not None:
+            self._fit_subsample(refs, n_components, normalize, max_fit, seed)
+            return
+
+        import torch
+        dev = torch.device(device or ("cuda" if torch.cuda.is_available() else "cpu"))
+        sum_x = sum_xx = None
+        n_total = 0
+        for ref in tqdm(refs, desc="PCA fit (exact, all patches)", unit="tile"):
+            a = patch_io.load(ref)
+            a = a.reshape(-1, a.shape[-1]).astype(np.float32)
+            if normalize:
+                a = a / (np.linalg.norm(a, axis=1, keepdims=True) + 1e-6)
+            t = torch.from_numpy(np.ascontiguousarray(a)).to(dev, dtype=torch.float32)
+            if sum_xx is None:                                  # lazily size on the first tile's C
+                C = t.shape[1]
+                sum_x = torch.zeros(C, device=dev, dtype=torch.float64)
+                sum_xx = torch.zeros(C, C, device=dev, dtype=torch.float64)
+            sum_x += t.sum(0).double()                          # fp32 matmul, fp64 accumulation
+            sum_xx += (t.T @ t).double()
+            n_total += t.shape[0]
+        if sum_xx is None:
+            raise ValueError("GPUPCA: no patches to fit (empty refs).")
+
+        n = max(n_total, 1)
+        mean = sum_x / n
+        cov = (sum_xx - n * torch.outer(mean, mean)) / max(n - 1, 1)
+        cov = (cov + cov.T) / 2                                 # symmetrise fp roundoff
+        eigvals, eigvecs = torch.linalg.eigh(cov)               # ascending
+        eigvals, eigvecs = eigvals.flip(0), eigvecs.flip(1)     # -> descending
+        total_var = eigvals.clamp(min=0).sum().clamp(min=1e-12)
+
+        self.mean_ = mean.cpu().numpy().astype(np.float32)
+        self.components_ = np.ascontiguousarray(
+            eigvecs[:, :n_components].T.cpu().numpy().astype(np.float32))   # (n_components, C)
+        self.explained_variance_ = eigvals[:n_components].cpu().numpy().astype(np.float32)
+        self.explained_variance_ratio_ = (
+            (eigvals[:n_components] / total_var).cpu().numpy().astype(np.float32))
+        self.n_components_ = n_components
+
+    def _fit_subsample(self, refs, n_components, normalize, max_fit, seed):
+        """Legacy random-subsample fit (the old 'batch PCA'). Kept for the RGB webmap."""
         rng = np.random.default_rng(seed)
         per = max(1, max_fit // len(refs))
         fit = []
-        for ref in tqdm(refs, desc="PCA fit", unit="tile"):
+        for ref in tqdm(refs, desc="PCA fit (subsample)", unit="tile"):
             a = patch_io.load(ref)
             a = a.reshape(-1, a.shape[-1]).astype(np.float32)
             if normalize:
                 a = a / (np.linalg.norm(a, axis=1, keepdims=True) + 1e-6)
             fit.append(a[rng.choice(len(a), min(len(a), per), replace=False)])
         X = np.concatenate(fit); self.mean_ = X.mean(0)
-        _, V = np.linalg.eigh((X - self.mean_).T @ (X - self.mean_))
+        Xc = X - self.mean_
+        evals, V = np.linalg.eigh(Xc.T @ Xc)
         self.components_ = np.ascontiguousarray(V[:, ::-1][:, :n_components].T)   # (n_components, C)
+        total_var = max(float(evals.clip(min=0).sum()), 1e-12)
+        self.explained_variance_ratio_ = (evals[::-1][:n_components] / total_var).astype(np.float32)
         self.n_components_ = n_components
 
 
